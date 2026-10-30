@@ -1,0 +1,7 @@
+# Runtime dependencies (pinned to the versions tested with Python 3.14).
+fastapi==0.162.0
+uvicorn==0.54.0
+pydantic==2.14.1
+pydantic-settings==2.16.2
+pinecone==10.2.0
+google-genai==2.33.0

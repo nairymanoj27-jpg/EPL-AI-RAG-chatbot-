@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Ask grounded questions about English Premier League statistics, with citations from the indexed documents."
+    />
+    <!-- Set content to your API origin (for example http://127.0.0.1:8000) when
+         serving this folder from a different origin. Leave empty for same-origin. -->
+    <meta name="api-base" content="" />
+    <title>Premier League RAG</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#composer-input">Skip to question box</a>
+
+    <div class="app">
+      <header class="app-header">
+        <div class="brand">
+          <svg
+            class="brand-mark"
+            viewBox="0 0 48 48"
+            role="img"
+            aria-label="Football pitch icon"
+          >
+            <rect x="3" y="7" width="42" height="34" rx="4" />
+            <line x1="24" y1="7" x2="24" y2="41" />
+            <circle cx="24" cy="24" r="6.5" />
+            <path d="M3 17h7v14H3M45 17h-7v14h7" />
+          </svg>
+          <div>
+            <h1>Premier League RAG</h1>
+            <p class="tagline">Answers grounded in your indexed match data</p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <span id="connection-status" class="status-pill" data-state="unknown">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span id="connection-text">Checking API…</span>
+          </span>
+          <button id="settings-button" class="button ghost" type="button">
+            API key
+          </button>
+          <button id="reset-button" class="button ghost" type="button">
+            New chat
+          </button>
+        </div>
+      </header>
+
+      <main class="chat-shell">
+        <section id="welcome" class="welcome" aria-labelledby="welcome-title">
+          <div class="welcome-card">
+            <p class="eyebrow">Retrieval-augmented answers</p>
+            <h2 id="welcome-title">Ask about Premier League stats</h2>
+            <p>
+              The assistant searches your existing Pinecone index and answers only from the
+              retrieved passages. Every claim should cite a source like
+              <span class="citation-chip">S1</span>. If the evidence is missing, it says so.
+            </p>
+
+            <div class="example-grid" aria-label="Example questions">
+              <button class="example" type="button" data-question="Which player scored the most goals in a single Premier League season?">
+                <span class="example-label">Records</span>
+                <span>Most goals in a single season?</span>
+              </button>
+              <button class="example" type="button" data-question="How many points did the champions finish with, and who was their top scorer?">
+                <span class="example-label">Season summary</span>
+                <span>Champions' points and top scorer?</span>
+              </button>
+              <button class="example" type="button" data-question="Compare the head-to-head record between Arsenal and Manchester United in the available data.">
+                <span class="example-label">Head to head</span>
+                <span>Arsenal vs Manchester United record</span>
+              </button>
+              <button class="example" type="button" data-question="Which teams had the best defensive record in the most recent season covered by the documents?">
+                <span class="example-label">Analysis</span>
+                <span>Best defensive record?</span>
+              </button>
+            </div>
+
+            <p class="welcome-note">
+              Follow-up questions keep context within this chat. Start a new chat to reset it.
+            </p>
+          </div>
+        </section>
+
+        <section
+          id="messages"
+          class="messages"
+          aria-live="polite"
+          aria-label="Conversation"
+        ></section>
+
+        <div id="error-banner" class="error-banner" role="alert" hidden>
+          <div>
+            <strong id="error-title">Something went wrong</strong>
+            <p id="error-message"></p>
+          </div>
+          <div class="error-actions">
+            <button id="retry-button" class="button small" type="button">Retry</button>
+            <button id="dismiss-error" class="button small ghost" type="button">
+              Dismiss
+            </button>
+          </div>
+        </div>
+
+        <section id="loading" class="loading" hidden aria-live="polite">
+          <span class="typing" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span id="loading-text">Searching the index and drafting an answer…</span>
+        </section>
+
+        <form id="composer" class="composer" autocomplete="off">
+          <label class="sr-only" for="composer-input">Your question</label>
+          <textarea
+            id="composer-input"
+            name="question"
+            rows="1"
+            maxlength="2000"
+            placeholder="Ask a question about Premier League statistics…"
+            required
+          ></textarea>
+          <div class="composer-side">
+            <span id="char-count" class="char-count" aria-hidden="true">0 / 2000</span>
+            <button id="send-button" class="button primary" type="submit">
+              Send
+            </button>
+          </div>
+        </form>
+        <p class="disclaimer">
+          Answers are generated from retrieved documents and can be incomplete. Verify important
+          facts against the cited sources. This app never modifies your Pinecone index.
+        </p>
+      </main>
+    </div>
+
+    <dialog id="settings-dialog" class="dialog" aria-labelledby="settings-title">
+      <form method="dialog" class="dialog-form" id="settings-form">
+        <h2 id="settings-title">API key</h2>
+        <p>
+          Required only if the server was started with <code>APP_API_KEY</code>. The key is kept
+          in this browser tab's session storage and is cleared when the tab closes.
+        </p>
+        <label for="api-key-input">Application API key</label>
+        <input
+          id="api-key-input"
+          name="api-key"
+          type="password"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Paste the value of APP_API_KEY"
+        />
+        <div class="dialog-actions">
+          <button id="clear-key" class="button ghost" type="button">Clear key</button>
+          <div class="spacer"></div>
+          <button id="cancel-key" class="button ghost" type="button">Cancel</button>
+          <button id="save-key" class="button primary" type="submit" value="save">Save key</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
